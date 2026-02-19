@@ -1,0 +1,24 @@
+0c4f8094939d [VPlan] Compute predicated load/store costs in VPlan. (NFC) (#179129)
+42e404512bdd [clang-format][doc] Add GNU style link in KeepFormFeed option (#176654)
+ec059d81aafe [DSE] Handle variable offsets with sized dead_on_return (#180364)
+39622a7739b8 [ProfCheck] Add PreISelIntrinsicLoweringTest to XFail
+a94759999112 [AMDGPU][GlobalISel] Add lowering for G_FMODF (#180152)
+9dd5542a3477 [clang][NFC] Replace includes of "Attrs.inc" with "Attr.h" (#180356)
+be4dbf5d6459 [lld][ELF] Remove redundant size check in nopInstrFill
+f72da501354e [obj2yaml] Support SHT_LLVM_BB_ADDR_MAP version 5
+8b5e95b1fd2f [InferAddressSpaces] Initialize op(generic const, generic const, ...) -> generic (#172143)
+8bced611727d [NFC][ADT] add NumDigitsBase10 to MathExtra and update some current users (#165479)
+f1d8d0383706 [HIP][Sema] Fix incorrect CK_NoOp for lvalue-to-rvalue conversion in … (#180314)
+43905d6c8a50 Revert "[ValueTracking] Propagate sign information out of loop" (#180354)
+2a74e02a9088 Revert "[SelectionDAG] Fix null pointer dereference in resolveDanglingDebugInfo" (#180352)
+b0cc73d00c1c [GlobalISel] add G_ROTL, G_ROTR to computeKnownBits (#166365)
+1acc200d88ce [NFC][LiveStacks] Use vectors instead of map and unordred_map (#165477)
+2002a5926c32 [libc++][test][NFC] remove unused and global variables in the test (#179038)
+f52f97b30b26 [SLP][NFC]Add another shl-to-add modeling test, NFC
+d94caea215f2 [libc][math] Refactor ffmal to Header Only. (#179069)
+15832a69675a [libc][math] Refactor sqrtf128 to header only (#177760)
+e8908215de66 [LSR] Support SCEVPtrToAddr in SCEVDbgValueBuilder.
+7054a4b8f992 [ValueTracking] Propagate sign information out of loop (#175590)
+0fd4ad2835d9 [CIR] Scoped atomic exchange (#173781)
+c3811805369b [mlir][AMDGPU] Avoid verifier crash in DPPOp on vector operand types (#178887)
+9029744432a7 [libcxx] Add missing header to re/re.alg/re.alg.search/grep.pass.cpp (#180024)
