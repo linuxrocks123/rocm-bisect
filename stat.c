@@ -1,3 +1,4 @@
+//Copyright © Advanced Micro Devices, Inc., or its affiliates.
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

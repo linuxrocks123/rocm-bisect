@@ -1,3 +1,4 @@
+//Copyright © Advanced Micro Devices, Inc., or its affiliates.
 #include <sys/stat.h>
 
 #include <dlfcn.h>
