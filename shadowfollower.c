@@ -1,4 +1,7 @@
 //Copyright © Advanced Micro Devices, Inc., or its affiliates.
+
+#define _GNU_SOURCE
+
 #include <sys/stat.h>
 
 #include <dlfcn.h>
@@ -19,4 +22,20 @@ int lstat(const char *restrict path, struct stat *restrict statbuf)
      if(!strncmp(path,"/opt/rocm",strlen("/opt/rocm")))
        return -1;
      return real_lstat(path,statbuf);
+}
+
+int fstatat(int dirfd, const char *restrict path, struct stat *restrict statbuf, int flags)
+{
+	int (*real_fstatat)(int dirfd, const char *restrict path, struct stat *restrict statbuf, int flags) = dlsym(((void *) -1l),"fstatat");
+	if(!strncmp(path,"/opt/rocm",strlen("/opt/rocm")))
+		return -1;
+	return real_fstatat(dirfd,path,statbuf,flags);
+}
+
+int statx(int dirfd, const char * restrict path, int flags, unsigned int mask, struct statx *restrict statxbuf)
+{
+	int (*real_statx)(int dirfd, const char * restrict path, int flags, unsigned int mask, struct statx *restrict statxbuf) = dlsym(((void *) -1l),"statx");
+	if(!strncmp(path,"/opt/rocm",strlen("/opt/rocm")))
+	       return -1;
+     	return real_statx(dirfd,path,flags,mask,statxbuf);
 }
