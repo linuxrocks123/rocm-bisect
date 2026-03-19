@@ -37,5 +37,4 @@ def recurse_git_diff(diffcmd):
             print("DIRTY_EOF")
 
 print("git reset --hard "+get_output_for_cmd("git rev-parse HEAD~1").rstrip())
-recurse_git_diff("git diff")
 recurse_git_diff("git diff HEAD~1")
