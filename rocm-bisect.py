@@ -9,13 +9,17 @@ git_ids = []
 try:
     while True:
         sha = raw_input().split()
-        git_ids.insert(0,sha[0])
+        if sha[0]=="FOREIGN":
+            git_ids.insert(0,(sha[1],sha[2]))
+        else:
+            git_ids.insert(0,sha[0])
 except EOFError:
     pass
 
 build_command = "ninja clean; ninja amd-llvm"
 test_command = "ninja"
 cherry_pick_dir = "../compiler/amd-llvm"
+cherry_pick_args = ""
 
 if len(sys.argv) > 1:
     build_command = sys.argv[1]
@@ -25,6 +29,9 @@ if len(sys.argv) > 2:
 
 if len(sys.argv) > 3:
     cherry_pick_dir = sys.argv[3]
+
+if len(sys.argv) > 4: #will almost always be "-m 1"
+    cherry_pick_args = sys.argv[4]
 
 #Inclusive bounds
 lower_bound = -1
@@ -43,10 +50,38 @@ def output_bounds():
     if upper_bound < len(git_ids):
         print("Earliest failing SHA: "+git_ids[upper_bound])
 
+def run_cherry_picks(desired_sha_idx):
+    os.system("cd "+cherry_pick_dir+"; git reset --hard "+base_sha+"; git cherry-pick --abort")
+    for idx in range(0,desired_sha_idx+1):
+        if not isinstance(git_ids[idx],tuple):
+            cmd = "cd "+cherry_pick_dir+"; git cherry-pick --empty=drop "+cherry_pick_args+" "+git_ids[idx]
+        else:
+            cmd = "cd "+git_ids[idx][0]+"; git cherry-pick --empty=drop "+cherry_pick_args+" "+git_ids[idx][1]
+        if os.system(cmd)!=0:
+            print("FAILED TO APPLY CHERRY PICK: "+git_ids[idx])
+            exit(1)
 
 os.system("pushd "+cherry_pick_dir+"; x=`git rev-parse HEAD`; popd; echo $x > base_sha.txt")
 base_sha=open("base_sha.txt").read().rstrip()
 print("Base SHA, so you have it in case anything goes wrong: "+base_sha)
+
+#Sanity check: Base SHA should build and succeed
+run_cherry_picks(-1)
+if os.system(build_command)!=0:
+    print("Sanity check failed: the base SHA fails to build.")
+    exit(1)
+elif os.system(test_command)!=0:
+    print("Sanity check failed: the base SHA does not pass the test.")
+    exit(1)
+
+#Sanity check: final SHA should build and fail
+run_cherry_picks(upper_bound - 1)
+if os.system(build_command)!=0:
+    print("Sanity check failed: the final SHA fails to build.")
+    exit(1)
+elif os.system(test_command)==0:
+    print("Sanity check failed: the final SHA passes the test.")
+    exit(1)
 
 while lower_bound + 1 != upper_bound and not only_ftb_shas_between(lower_bound,upper_bound):
     current_sha_idx = (lower_bound + upper_bound)/2
@@ -61,11 +96,7 @@ while lower_bound + 1 != upper_bound and not only_ftb_shas_between(lower_bound,u
         exit(0)
 
     #Cherry pick the necessary commits
-    os.system("cd "+cherry_pick_dir+"; git reset --hard "+base_sha+"; git cherry-pick --abort")
-    for idx in range(0,current_sha_idx+1):
-        if os.system("cd "+cherry_pick_dir+"; git cherry-pick --empty=drop "+git_ids[idx])!=0:
-            print("FAILED TO APPLY CHERRY PICK: "+git_ids[idx])
-            exit(1)
+    run_cherry_picks(current_sha_idx)
 
     #Cherry picks completed
 

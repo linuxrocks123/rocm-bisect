@@ -7,7 +7,7 @@ Usage:
 
 - Then, use a command like:
 
-`git log --oneline 78348cc2f1b03f43b9421d775abd6aa73d07ee5a..0c4f8094939d2a2b50b6cd062cd1473a0315457f > gitlog.txt`
+`git log --oneline 78348cc2f1b03f43b9421d775abd6aa73d07ee5a^..78348cc2f1b03f43b9421d775abd6aa73d07ee5a > gitlog.txt`
 
 to generate a list of SHAs that span the known range between "test
 passes" and "test fails."
@@ -27,5 +27,5 @@ You can pass a third argument if you like.  That argument is the
 directory where you need to go to apply the cherry-picked SHAs.  In
 our case, the default `../compiler/amd-llvm` is correct.
 
-Once the bisection is complese, output will be the SHAs of the latest
+Once the bisection is complete, output will be the SHAs of the latest
 known good commit and the earliest known failing commit
