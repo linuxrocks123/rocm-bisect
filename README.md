@@ -55,7 +55,7 @@ Bisecting inside of a merge after finding it's the commit that's bad:
 ```
 #Generate the list of commits between good and bad
 pushd ../compiler/amd-llvm
-git reset --hard 12345678
+git reset --hard hash-rght-before-12345678
 git log --oneline 12345678^..12345678 > /work/scratch/gitlog_2.txt
 
 #Make sure all commits apply:
@@ -73,11 +73,11 @@ git commit -a
 vi /work/scratch/gitlog_2.txt
 
 #Rerun test
-git reset --hard 12345678
+git reset --hard hash-right-before-12345678
 for i in `cat ../../build/gitlog_2.txt | sed 's/ .*//' | tac`; do git cherry-pick --allow-empty $i; done
 
 #After it passes
-git reset --hard 12345678
+git reset --hard hash-right-before-12345678
 popd
 
 #Run script
