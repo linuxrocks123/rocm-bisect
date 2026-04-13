@@ -1,4 +1,4 @@
-# rocm-bisect
+ rocm-bisect
 Script to bisect ROCm failures
 
 Usage:
@@ -29,3 +29,57 @@ our case, the default `../compiler/amd-llvm` is correct.
 
 Once the bisection is complete, output will be the SHAs of the latest
 known good commit and the earliest known failing commit
+
+Example bisect of a failure between two commits on amd-staging for LLVM:
+```
+cd ../compiler/amd-llvm
+
+#Generate the list of commits between good and bad
+git log --oneline --first-parent 6602f325c28907dba03c42fc0263c4a309529c52..c849bc16b0e49951d313756f20b73c2b28d321d7 > /work/scratch/gitlog_1.txt
+
+#Reset branch
+git reset --hard 6602f325
+
+#Make sure all commits apply (they should since we're not inside a merge)
+for i in `cat ../../build/gitlog_1.txt | sed 's/ .*//' | tac`; do git cherry-pick -m 1 $i; done
+
+#Reset branch again
+git reset --hard 6602f325
+
+#Run script
+cd ../../build
+/work/scratch/rocm-bisect/rocm-bisect.py 'ninja clean; ninja amd-llvm' ninja ../compiler/amd-llvm "-m 1" < /work/scratch/gitlog_1.txt
+```
+
+Bisecting inside of a merge after finding it's the commit that's bad:
+```
+#Generate the list of commits between good and bad
+pushd ../compiler/amd-llvm
+git reset --hard 12345678
+git log --oneline 12345678^..12345678 > /work/scratch/gitlog_2.txt
+
+#Make sure all commits apply:
+for i in `cat ../../build/gitlog_2.txt | sed 's/ .*//' | tac`; do git cherry-pick --allow-empty $i; done
+
+#Fix the ones that don't
+
+#Edit files
+vi
+
+#Commit fix
+git commit -a
+
+#Replace SHA in /work/scratch/gitlog_2.txt
+vi /work/scratch/gitlog_2.txt
+
+#Rerun test
+git reset --hard 12345678
+for i in `cat ../../build/gitlog_2.txt | sed 's/ .*//' | tac`; do git cherry-pick --allow-empty $i; done
+
+#After it passes
+git reset --hard 12345678
+popd
+
+#Run script
+/work/scratch/rocm-bisect/rocm-bisect.py 'ninja clean; ninja amd-llvm' ninja ../compiler/amd-llvm "--allow-empty" < /work/scratch/gitlog_2.txt
+```
